@@ -1,12 +1,25 @@
 import argparse
+import json
+import os
 
-tasks = []
+TASKS_FILE = "tasks.json"
 
-def add_task(name):
+def load_tasks():
+    if os.path.exists(TASKS_FILE):
+        with open(TASKS_FILE) as f:
+            return json.load(f)
+    return []
+
+def save_tasks(tasks):
+    with open(TASKS_FILE, "w") as f:
+        json.dump(tasks, f, indent=2)
+
+def add_task(tasks, name):
     tasks.append({"name": name, "done": False})
+    save_tasks(tasks)
     print(f"Added {name}")
 
-def list_tasks():
+def list_tasks(tasks):
     if not tasks:
         print("No tasks yet")
         return
@@ -20,14 +33,16 @@ def main():
     sub = parser.add_subparsers(dest="command")
 
     add_p = sub.add_parser("add", help="Add a task")
-    add_p.add_argument("list", help="List tasks")
+    add_p.add_argument("name", help="Task name")
+    sub.add_parser("list", help="List tasks")
 
     args = parser.parse_args()
+    tasks = load_tasks()
 
     if args.command == "add":
-        add_task(args.name)
+        add_task(tasks, args.name)
     elif args.command == "list":
-        list_tasks()
+        list_tasks(tasks)
     else:
         parser.print_help()
 
