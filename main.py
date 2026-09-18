@@ -19,6 +19,14 @@ def add_task(tasks, name):
     save_tasks(tasks)
     print(f"Added {name}")
 
+def delete_task(tasks, index):
+    if 1 <= index <= len(tasks):
+        removed = tasks.pop(index - 1)
+        save_tasks(tasks)
+        print(f"Deleted: {removed['name']}")
+    else:
+        print("Invalid task number.")
+
 def list_tasks(tasks):
     if not tasks:
         print("No tasks yet")
@@ -35,6 +43,8 @@ def main():
     add_p = sub.add_parser("add", help="Add a task")
     add_p.add_argument("name", help="Task name")
     sub.add_parser("list", help="List tasks")
+    delete_p = sub.add_parser("delete", help="Delete a task")
+    delete_p.add_argument("index", type=int, help="Task number")
 
     args = parser.parse_args()
     tasks = load_tasks()
@@ -43,6 +53,8 @@ def main():
         add_task(tasks, args.name)
     elif args.command == "list":
         list_tasks(tasks)
+    elif args.command == "delete":
+        delete_task(tasks, args.index)
     else:
         parser.print_help()
 
